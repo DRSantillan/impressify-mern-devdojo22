@@ -1,9 +1,9 @@
 import React from 'react';
-import css from './Avatar.styles.module.scss';
+import './Avatar.styles.scss';
 
 const Avatar = ({ className, style, imageUrl, alt, width }) => {
 	return (
-		<div className={`${css.avatar} ${className}`} style={style}>
+		<div className={`avatar ${className}`} style={style}>
 			<img
 				src={imageUrl}
 				alt={alt}

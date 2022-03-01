@@ -1,5 +1,5 @@
 import React from 'react';
-import css from './Users.styles.module.scss';
+import './Users.styles.scss';
 import UsersList from '../../components/users/users-list/UsersList.component';
 
 const Users = () => {

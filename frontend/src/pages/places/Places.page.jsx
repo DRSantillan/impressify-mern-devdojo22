@@ -1,5 +1,5 @@
 import React from 'react'
-import css from './Places.styles.module.scss'
+import './Places.styles.scss'
 const Places = () => {
   return (
     <div>Places</div>
