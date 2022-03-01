@@ -1,5 +1,5 @@
 import React from 'react';
-import UserItem from '../user-item/UserItem.component';
+import UserItem from '../item/UserItem.component';
 import Card from '../../ui/card/Card.component';
 import './UsersList.styles.scss';
 

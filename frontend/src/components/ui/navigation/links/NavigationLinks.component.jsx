@@ -6,10 +6,12 @@ const NavigationLinks = () => {
 	return (
 		<ul className='nav-links'>
 			<li>
-				<NavLink to='/' exact>All Users</NavLink>
+				<NavLink to='/' exact>
+					All Users
+				</NavLink>
 			</li>
 			<li>
-				<NavLink to='/id/places'>My Places</NavLink>
+				<NavLink to='/39883dkj/places'>My Places</NavLink>
 			</li>
 			<li>
 				<NavLink to='/places/new'>Add New Place</NavLink>

@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Users from '../../pages/users/Users.page';
-import Places from '../../pages/places/Places.page';
-import AddNewPlace from '../../pages/places/add-new-place/AddNewPlace.page';
+import Places from '../../pages/places/places/Places.page'
+import NewPlace from '../../pages/places/new/NewPlace.page';
 import Navigation from '../../components/ui/navigation/Navigation.component';
 import './App.css';
 
@@ -13,8 +13,8 @@ function App() {
 			<main>
 				<Routes>
 					<Route path='/' element={<Users />} />
-					<Route path='/places' element={<Places />} />
-					<Route path='/places/new' element={<AddNewPlace />} />
+					<Route path='/:userId/places' element={<Places />} exact/>
+					<Route path='/places/new' element={<NewPlace />} />
 				</Routes>
 			</main>
 		</Router>

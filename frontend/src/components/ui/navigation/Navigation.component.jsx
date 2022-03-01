@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Navigation.styles.scss';
 import Header from '../header/Header.component';
-import NavigationLinks from '../navigation-links/NavigationLinks.component';
+import NavigationLinks from './links/NavigationLinks.component';
 import SideDrawer from '../side-drawer/SideDrawer.component';
 import BackDrop from '../backdrop/BackDrop.component';
 const Navigation = () => {
