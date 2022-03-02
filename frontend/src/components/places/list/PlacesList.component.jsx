@@ -19,9 +19,10 @@ const PlacesList = ({ placeItems }) => {
 		);
 	}
 
-	const placeItemsContent = placeItems.map(placeItem => (
-		<PlaceItem key={placeItem.id} {...placeItem} />
-	));
+	const placeItemsContent = placeItems.map(placeItem => {
+		console.log(placeItem);
+		return <PlaceItem key={placeItem.id} {...placeItem} />;
+	});
 
 	return <ul className='place-list'>{placeItemsContent}</ul>;
 };
