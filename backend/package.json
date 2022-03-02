@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "type": "module",
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend server for expressify",
+  "main": "index.js",
+  "author": "Dean Santillan",
+  "license": "MIT"
+}
