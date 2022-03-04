@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 import './PlaceItem.styles.scss';
 import Card from '../../ui/card/Card.component';
 import Button from '../../ui/button/Button.component';
@@ -14,12 +15,20 @@ const PlaceItem = ({
 	creatorId,
 	location,
 }) => {
-	console.log(location);
+	const userId = useParams().userId;
 	const [showMap, setShowMap] = useState(false);
-
+	const [showConfirmation, setShowConfirmation] = useState(false);
+	// handlers
 	const openGoogleMapHandler = () => setShowMap(true);
 	const closeGoogleMapHandler = () => setShowMap(false);
-
+	const openConfirmationHandler = () => setShowConfirmation(true);
+	const closeConfirmationHandler = () => setShowConfirmation(false);
+	const deletePlaceHandler = id => {
+		console.log(id);
+		setShowConfirmation(false);
+		//Navigate({ to: `/places/new`});
+	};
+	//
 	return (
 		<>
 			<Modal
@@ -33,6 +42,24 @@ const PlaceItem = ({
 				<div className='map-container'>
 					<GoogleMap center={location} zoom={16} />
 				</div>
+			</Modal>
+			<Modal
+				show={showConfirmation}
+				header='Are you sure you want to delete this Place?'
+				footer={
+					<>
+						<Button onClick={closeConfirmationHandler} inverse>
+							Cancel
+						</Button>
+						<Button onClick={() => deletePlaceHandler(id)} danger>
+							Delete
+						</Button>
+					</>
+				}
+				onCancel={closeConfirmationHandler}
+				footerClass='place-item__modal-actions'
+			>
+				<p>Please confirm deletion, this action cannot be undone?</p>
 			</Modal>
 			<li className='place-item'>
 				<Card className='place-item__content'>
@@ -49,7 +76,9 @@ const PlaceItem = ({
 							View On Map
 						</Button>
 						<Button to={`/places/${id}`}>Edit</Button>
-						<Button danger>Delete</Button>
+						<Button danger onClick={openConfirmationHandler}>
+							Delete
+						</Button>
 					</div>
 				</Card>
 			</li>
