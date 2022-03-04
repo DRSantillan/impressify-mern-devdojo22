@@ -29,18 +29,22 @@ const Input = ({
 	element,
 	errorText,
 	validators,
-    onInput
+    onInput,
+	initialValid,
+	initialValue
 }) => {
+	
 	const [inputState, dispatch] = useReducer(inputReducer, {
-		value: '',
+		value: initialValue || '',
 		isTouched: false,
-		isValid: false,
+		isValid: initialValid || false,
 	});
     const {value, isValid} = inputState
+	
 	//
 	useEffect(() => {
 		onInput(id, value, isValid);
-	}, [id, onInput,value, isValid]);
+	}, [id, onInput, value, isValid]);
 	//
 	const changeHandler = event => {
 		dispatch({ type: 'CHANGE', val: event.target.value, validators });

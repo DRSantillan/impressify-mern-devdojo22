@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Card from '../../../components/ui/card/Card.component';
 import PlaceItem from '../item/PlaceItem.component';
+import Button from '../../../components/ui/button/Button.component';
 import './PlacesList.styles.scss';
 
 const PlacesList = ({ placeItems }) => {
@@ -12,7 +13,7 @@ const PlacesList = ({ placeItems }) => {
 					<h2>
 						No places were found. Maybe{' '}
 						<Link to='/places/new'>Create One here</Link>
-						<button>Share Place</button>
+						<Button to='/places/new'>Share Place</Button>
 					</h2>
 				</Card>
 			</div>

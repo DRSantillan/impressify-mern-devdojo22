@@ -4,6 +4,7 @@ import './Places.styles.scss';
 import { USER_PLACES_DATA } from '../../../data/db';
 import PlacesList from '../../../components/places/list/PlacesList.component';
 
+
 const Places = () => {
 	const userId = useParams().userId;
 	const userPlaces = USER_PLACES_DATA.filter(
