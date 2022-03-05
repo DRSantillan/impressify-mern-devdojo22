@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import './PlaceItem.styles.scss';
 import Card from '../../ui/card/Card.component';
 import Button from '../../ui/button/Button.component';
 import Modal from '../../ui/modal/Modal.component';
 import GoogleMap from '../../ui/google-map/GoogleMap.component';
+import {AuthenticationContext} from '../../../context/auth/AuthenticationContext.context'
 
 const PlaceItem = ({
 	id,
@@ -15,6 +16,7 @@ const PlaceItem = ({
 	creatorId,
 	location,
 }) => {
+	const auth = useContext(AuthenticationContext);
 	const userId = useParams().userId;
 	const [showMap, setShowMap] = useState(false);
 	const [showConfirmation, setShowConfirmation] = useState(false);
@@ -75,10 +77,13 @@ const PlaceItem = ({
 						<Button inverse onClick={openGoogleMapHandler}>
 							View On Map
 						</Button>
+						{auth.isLoggedIn && <>
 						<Button to={`/places/${id}`}>Edit</Button>
 						<Button danger onClick={openConfirmationHandler}>
 							Delete
 						</Button>
+						</>}
+						
 					</div>
 				</Card>
 			</li>
