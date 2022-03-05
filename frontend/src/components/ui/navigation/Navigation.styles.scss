@@ -20,6 +20,9 @@
 
 .main-navigation__title {
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-navigation__title a {

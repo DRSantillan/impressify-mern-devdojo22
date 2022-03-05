@@ -2,8 +2,7 @@ import {
 	BrowserRouter as Router,
 	Routes,
 	Route,
-	Navigate,
-	useNavigate
+	Navigate
 } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import Users from '../../pages/users/Users.page';
@@ -43,7 +42,7 @@ function App() {
 				<Route path='/' element={<Users />} />
 				<Route path='/:userId/places' element={<Places />} exact />
 				<Route path='/authenticate' element={<Authentication />} />
-				 <Route path='/**' element={<Navigate to='/authenticate' />} /> 
+				 <Route path='/*' element={<Navigate to='/' />} /> 
 			</>
 		);
 	}

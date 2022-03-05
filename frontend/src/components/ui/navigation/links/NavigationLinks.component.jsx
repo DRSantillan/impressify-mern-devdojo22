@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AuthenticationContext } from '../../../../context/auth/AuthenticationContext.context';
-import Button from '../../button/Button.component';
 import './NavigationLinks.styles.scss';
 
 const NavigationLinks = () => {

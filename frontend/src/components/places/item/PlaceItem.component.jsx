@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { useState, useContext } from 'react';
 import './PlaceItem.styles.scss';
 import Card from '../../ui/card/Card.component';
 import Button from '../../ui/button/Button.component';
@@ -17,7 +16,6 @@ const PlaceItem = ({
 	location,
 }) => {
 	const auth = useContext(AuthenticationContext);
-	const userId = useParams().userId;
 	const [showMap, setShowMap] = useState(false);
 	const [showConfirmation, setShowConfirmation] = useState(false);
 	// handlers

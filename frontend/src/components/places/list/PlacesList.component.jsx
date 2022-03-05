@@ -21,7 +21,6 @@ const PlacesList = ({ placeItems }) => {
 	}
 
 	const placeItemsContent = placeItems.map(placeItem => {
-		console.log(placeItem);
 		return <PlaceItem key={placeItem.id} {...placeItem} />;
 	});
 

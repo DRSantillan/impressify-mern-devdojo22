@@ -5,6 +5,7 @@ import Header from '../header/Header.component';
 import NavigationLinks from './links/NavigationLinks.component';
 import SideDrawer from '../side-drawer/SideDrawer.component';
 import BackDrop from '../backdrop/BackDrop.component';
+
 const Navigation = () => {
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -36,7 +37,11 @@ const Navigation = () => {
 					<span />
 				</button>
 				<h1 className='main-navigation__title'>
-					<Link to='/'>Impressify</Link>
+					<div></div>
+					<div>
+						<Link to='/'>Impressify</Link>
+					</div>
+					
 				</h1>
 				<nav className='main-navigation__header-nav'>
 					<NavigationLinks />

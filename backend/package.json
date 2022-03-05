@@ -5,6 +5,9 @@
   "devDependencies": {
     "nodemon": "^2.0.15"
   },
+  "scripts": {
+    "start": "nodemon app.js"
+  },
   "type": "module",
   "name": "backend",
   "version": "1.0.0",
