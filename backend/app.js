@@ -1,6 +1,6 @@
 import express from 'express';
-import PlacesRouter from './routes/places.routes.js';
-import UsersRouter from './routes/users.routes.js';
+import PlacesRouter from './src/api/places/routes/Places.routes.js'
+import UsersRouter from './src/api/users/routes/Users.routes.js'
 
 const app = express();
 const path = '/api/v1/';
