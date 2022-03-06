@@ -16,13 +16,13 @@ const registerToValidate = [
 ];
 const authToValidate = [
 	check('email').notEmpty().normalizeEmail().isEmail(),
-	check('password').notEmpty().isLength({ min: 8 }),
+	check('password').notEmpty().isLength({ min: 6}),
 ];
 
 const checkBodyData = array => {
 	return array;
 };
-
+// routes
 UsersRouter.get('/', getAllUsers);
 UsersRouter.get('/:uid', getUserByID);
 UsersRouter.post(
