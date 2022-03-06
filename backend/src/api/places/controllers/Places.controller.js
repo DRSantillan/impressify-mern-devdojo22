@@ -1,9 +1,12 @@
 import { USER_PLACES_DATA } from '../../../data/db.js';
 import HttpError from '../../../errors/HttpError.js';
 import { v4 as uuidv4 } from 'uuid';
+import { validationResult } from 'express-validator';
+
+let PLACES_DB = USER_PLACES_DATA;
 //
 const getAllPlaces = (req, res, next) => {
-	const places = USER_PLACES_DATA;
+	const places = PLACES_DB;
 
 	if (!places) throw new HttpError('There are no places to be found.', 400);
 	res.status(200).json({ places });
@@ -11,7 +14,7 @@ const getAllPlaces = (req, res, next) => {
 //
 const getPlaceByID = (req, res, next) => {
 	const placeId = req.params.id;
-	const place = USER_PLACES_DATA.find(place => place.id === placeId);
+	const place = PLACES_DB.find(place => place.id === placeId);
 	if (!place)
 		throw new HttpError(
 			'Could not find a place with the provided id.',
@@ -21,20 +24,26 @@ const getPlaceByID = (req, res, next) => {
 	res.status(200).json({ place });
 };
 //
-const getPlaceByUserID = (req, res, next) => {
+const getPlacesByUserID = (req, res, next) => {
 	const uid = req.params.uid;
-	const place = USER_PLACES_DATA.find(place => place.creator === uid);
+	const places = PLACES_DB.filter(place => place.creator === uid);
 
-	if (!place)
+	if (!places || places.length === 0)
 		throw new HttpError(
 			'Could not find a place with the provided user id.',
 			400
 		);
 
-	res.status(200).json({ place });
+	res.status(200).json({ places });
+};
+const errorMessages = errors => {
+	// look into implementing a better error function with this
 };
 
 const createNewUserPlace = (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) throw new HttpError(`Invalid inputs!`, 422);
+	//
 	const { title, description, imageUrl, coordinates, address, creator } =
 		req.body;
 	const id = uuidv4();
@@ -49,42 +58,51 @@ const createNewUserPlace = (req, res, next) => {
 		creator,
 	};
 
-	USER_PLACES_DATA.push(newUserPlace);
+	PLACES_DB.push(newUserPlace);
 	res.status(201).json({ place: newUserPlace });
 };
 
-const deleteUserPlace = (req,res,next) => {
+const deleteUserPlace = (req, res, next) => {
 	const placeId = req.params.id;
-	console.log(placeId)
+	if (!PLACES_DB.find(place => place.id === placeId))
+		throw new HttpError('Could not find a place with that id.', 404);
+	
+	PLACES_DB = PLACES_DB.filter(place => place.id !== placeId);
 
-}
+	res.status(201).json({
+		message: 'Successfully deleted',
+		places: PLACES_DB,
+	});
+};
 
 const updateUserPlace = (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) throw new HttpError(`Invalid inputs!`, 422);
+
 	const placeId = req.params.id;
-	const { title, description, imageUrl, coordinates, address, creator } =
-		req.body;
-	
-	const placeToUpdate = USER_PLACES_DATA.find(place => place.id === placeId)
-	const updatePlace = {
+	const { title, description } = req.body;
+
+	// get the place to update and put into a new object to work with without directly updating the current state
+	const placeToUpdate = PLACES_DB.find(place => place.id === placeId);
+	// get the index of the object in the array to update later with new data
+	const placeIndex = PLACES_DB.findIndex(place => place.id === placeId);
+	// create a new object and spread the previous object state and add the updated fields
+	const updatedPlace = {
 		...placeToUpdate,
 		title,
 		description,
-		imageUrl,
-		coordinates,
-		address,
-		creator,
 	};
-	console.log(placeToUpdate, ',,,')
-	console.log(updatePlace, ',,,');
+	// now locate the object to be updated with the new state object
+	PLACES_DB[placeIndex] = updatedPlace;
 
-	console.log(placeId, req.body);
+	res.status(201).json({ place: updatedPlace });
 };
 
 export {
 	getPlaceByID,
-	getPlaceByUserID,
+	getPlacesByUserID,
 	getAllPlaces,
 	createNewUserPlace,
 	updateUserPlace,
-	deleteUserPlace
+	deleteUserPlace,
 };

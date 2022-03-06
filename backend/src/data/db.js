@@ -25,11 +25,25 @@ const USER_PLACES_DATA = [
 		},
 		creator: 'u2',
 	},
+	{
+		id: 'p3',
+		title: 'Niagar Falls in Canada',
+		description: 'One of the most famous waterfalls in the world!',
+		imageUrl:
+			'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/NYC_Empire_State_Building.jpg/640px-NYC_Empire_State_Building.jpg',
+		address: 'canada',
+		location: {
+			lat: 40.7484405,
+			lng: -73.9878584,
+		},
+		creator: 'u2',
+	},
 ];
 const USERS_DATA = [
 	{
 		id: 'u1',
 		name: 'Haru Santillan',
+		email: 'harumi_vrg@hotmail.com',
 		imageUrl:
 			'https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=836&q=80',
 		places: 3,
@@ -37,6 +51,8 @@ const USERS_DATA = [
 	{
 		id: 'u2',
 		name: 'Dean Santillan',
+		email: 'gaijincoach@hotmail.com',
+		password: '234533',
 		imageUrl:
 			'https://images.unsplash.com/photo-1534008897995-27a23e859048?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80',
 		places: 3,

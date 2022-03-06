@@ -14,8 +14,8 @@ app.get('/', (req, res) => {
     res.status(200).json('Welcome to impressify!')
 })
 
-app.use(`${path}places/`, PlacesRouter);
-app.use(`${path}users/`, UsersRouter);
+app.use(`${path}places`, PlacesRouter);
+app.use(`${path}users`, UsersRouter);
 
 // handle incorrect routes middleware
 app.use(noRouteError);

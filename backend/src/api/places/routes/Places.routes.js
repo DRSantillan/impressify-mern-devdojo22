@@ -1,20 +1,31 @@
-import express from 'express';
+import { Router } from 'express';
+import { check } from 'express-validator';
+
 import {
 	getPlaceByID,
-	getPlaceByUserID,
+	getPlacesByUserID,
 	getAllPlaces,
 	createNewUserPlace,
 	updateUserPlace,
 	deleteUserPlace,
 } from '../controllers/Places.controller.js';
 
-const PlacesRouter = express.Router();
+const PlacesRouter = Router();
+
+const checkBodyData = array => {
+	return array;
+};
+const fieldsToValidate = [
+	check('title').notEmpty(),
+	check('description').notEmpty({ min: 5 }),
+	check('address').notEmpty(),
+];
 
 PlacesRouter.get('/', getAllPlaces);
 PlacesRouter.get('/:id', getPlaceByID);
-PlacesRouter.get('/user/:uid', getPlaceByUserID);
-PlacesRouter.post('/', createNewUserPlace);
-PlacesRouter.put('/:id', updateUserPlace);
-PlacesRouter.delete('/:id', deleteUserPlace)
+PlacesRouter.get('/user/:uid', getPlacesByUserID);
+PlacesRouter.post('/', checkBodyData(fieldsToValidate), createNewUserPlace);
+PlacesRouter.put('/:id',checkBodyData(fieldsToValidate), updateUserPlace);
+PlacesRouter.delete('/:id', deleteUserPlace);
 
 export default PlacesRouter;
