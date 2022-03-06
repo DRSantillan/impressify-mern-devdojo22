@@ -2,7 +2,6 @@ import axios from 'axios';
 import 'dotenv/config'
 
 import HttpError from '../errors/HttpError.js';
-//const GOOGLE_API_KEY = 'AIzaSyC8DUh8AAAlw5cBFFpfaXAbHyyjawNbwTU';
 
 const getPlaceCoordinatesFromGoogle = async address => {
 	const GEOCODE_URI = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
