@@ -2,6 +2,7 @@ import { USER_PLACES_DATA } from '../../../data/db.js';
 import HttpError from '../../../errors/HttpError.js';
 import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
+import getPlaceCoordinatesFromGoogle from '../../../services/google.geocoding.api.js';
 
 let PLACES_DB = USER_PLACES_DATA;
 //
@@ -40,12 +41,18 @@ const errorMessages = errors => {
 	// look into implementing a better error function with this
 };
 
-const createNewUserPlace = (req, res, next) => {
+const createNewUserPlace = async (req, res, next) => {
 	const errors = validationResult(req);
-	if (!errors.isEmpty()) throw new HttpError(`Invalid inputs!`, 422);
+	if (!errors.isEmpty()) return next(new HttpError(`Invalid inputs!`, 422));
 	//
-	const { title, description, imageUrl, coordinates, address, creator } =
-		req.body;
+	const { title, description, imageUrl, address, creator } = req.body;
+	let coordinates;
+	try {
+		coordinates = await getPlaceCoordinatesFromGoogle(address);
+	} catch (error) {
+		return next(error);
+	}
+
 	const id = uuidv4();
 
 	const newUserPlace = {
@@ -66,7 +73,7 @@ const deleteUserPlace = (req, res, next) => {
 	const placeId = req.params.id;
 	if (!PLACES_DB.find(place => place.id === placeId))
 		throw new HttpError('Could not find a place with that id.', 404);
-	
+
 	PLACES_DB = PLACES_DB.filter(place => place.id !== placeId);
 
 	res.status(201).json({
