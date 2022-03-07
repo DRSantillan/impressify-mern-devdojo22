@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
 import routerV1 from './src/api/api.v1.routes.js';
-import { path,PORT,SERVER_URL } from './src/config/index.config.js';
+import { path, PORT, SERVER_URL } from './src/config/index.config.js';
+import { MongoDBConnect } from './src/services/mongo.db.js';
 
 // initialize express
 const app = express();
@@ -12,7 +13,6 @@ const app = express();
 app.use(cors({ origin: `${SERVER_URL}:${PORT}` }));
 app.use(express.json());
 app.use(morgan('combined'));
-
 
 // routes
 app.get('/', (req, res) => {
@@ -26,8 +26,19 @@ app.use(path, routerV1);
 app.use(noRouteError);
 app.use(showError);
 
-app.listen(PORT, () => {
-	console.log(
-		`Impressify API Server is up and running on ${SERVER_URL}:${PORT}`
-	);
-});
+// app.listen(PORT, () => {
+// 	console.log(
+// 		`Impressify API Server is up and running on ${SERVER_URL}:${PORT}`
+// 	);
+// });
+
+const startAPIServer = async () => {
+	await MongoDBConnect();
+	app.listen(PORT, () => {
+		console.log(
+			`Impressify API Server is up and running on ${SERVER_URL}:${PORT}`
+		);
+	});
+};
+
+startAPIServer()

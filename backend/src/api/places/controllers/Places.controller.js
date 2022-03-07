@@ -3,7 +3,10 @@ import HttpError from '../../../errors/HttpError.js';
 import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
 import getPlaceCoordinatesFromGoogle from '../../../services/google.geocoding.api.js';
-
+import Place from '../models/Place.schema.js';
+import { displayError } from '../../../errors/Errors.controller.js';
+const imageUrlPlaceHolder =
+	'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
 let PLACES_DB = USER_PLACES_DATA;
 //
 const getAllPlaces = (req, res, next) => {
@@ -13,32 +16,51 @@ const getAllPlaces = (req, res, next) => {
 	res.status(200).json({ places });
 };
 //
-const getPlaceByID = (req, res, next) => {
+const getPlaceByID = async (req, res, next) => {
 	const placeId = req.params.id;
-	const place = PLACES_DB.find(place => place.id === placeId);
+	let place;
+	try {
+		place = await Place.findById(placeId).exec();
+	} catch (error) {
+		return displayError(
+			'Something went wrong! Please try again.',
+			500,
+			next
+		);
+	}
+	//const place = PLACES_DB.find(place => place.id === placeId);
 	if (!place)
-		throw new HttpError(
+		return displayError(
 			'Could not find a place with the provided id.',
-			400
+			400,
+			next
 		);
 
-	res.status(200).json({ place });
+	res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 //
-const getPlacesByUserID = (req, res, next) => {
+const getPlacesByUserID = async (req, res, next) => {
 	const uid = req.params.uid;
-	const places = PLACES_DB.filter(place => place.creator === uid);
+
+	let places;
+
+	try {
+		places = await Place.find({creator: uid}).exec();
+	} catch (error) {
+		return displayError(
+			'Something went wrong! Could not find any places, Please try again.',
+			500,
+			next
+		);
+	}
 
 	if (!places || places.length === 0)
-		throw new HttpError(
-			'Could not find a place with the provided user id.',
+		throw displayError(
+			'Could not find places with the provided user id.',
 			400
 		);
 
-	res.status(200).json({ places });
-};
-const errorMessages = errors => {
-	// look into implementing a better error function with this
+	res.status(200).json({ places: places.map(place => place.toObject({getters: true})) });
 };
 
 const createNewUserPlace = async (req, res, next) => {
@@ -53,19 +75,26 @@ const createNewUserPlace = async (req, res, next) => {
 		return next(error);
 	}
 
-	const id = uuidv4();
+	//onst id = uuidv4();
 
-	const newUserPlace = {
-		id,
+	const newUserPlace = new Place({
 		title,
 		description,
 		imageUrl,
 		location: coordinates,
 		address,
 		creator,
-	};
+	});
 
-	PLACES_DB.push(newUserPlace);
+	try {
+		await newUserPlace.save();
+	} catch (error) {
+		return next(
+			new HttpError('Creating a new place failed, please try again.', 500)
+		);
+	}
+
+	//PLACES_DB.push(newUserPlace);
 	res.status(201).json({ place: newUserPlace });
 };
 

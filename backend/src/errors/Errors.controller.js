@@ -1,4 +1,4 @@
-import HttpError from "./HttpError.js";
+import HttpError from './HttpError.js';
 
 const noRouteError = (req, res, next) => {
 	throw new HttpError('Could not find the requested url...', 404);
@@ -11,4 +11,9 @@ const showError = (error, req, res, next) => {
 	});
 };
 
-export {noRouteError, showError}
+const displayError = (message, errorCode, next) => {
+	if (next) return next(new HttpError(message, errorCode));
+	return new HttpError(message, errorCode);
+};
+
+export { noRouteError, showError, displayError };
