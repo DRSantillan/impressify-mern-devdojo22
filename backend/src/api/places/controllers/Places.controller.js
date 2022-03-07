@@ -1,16 +1,14 @@
-import { USER_PLACES_DATA } from '../../../data/db.js';
-import HttpError from '../../../errors/HttpError.js';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose'
 import { validationResult } from 'express-validator';
 import getPlaceCoordinatesFromGoogle from '../../../services/google.geocoding.api.js';
 import Place from '../models/Place.schema.js';
 import { displayError } from '../../../errors/Errors.controller.js';
-const imageUrlPlaceHolder =
-	'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
-let PLACES_DB = USER_PLACES_DATA;
+import User from '../../users/models/User.schema.js';
+
 //
 const getAllPlaces = async (req, res, next) => {
 	let places;
+	//
 	try {
 		places = await Place.find({});
 	} catch (error) {
@@ -20,10 +18,10 @@ const getAllPlaces = async (req, res, next) => {
 			next
 		);
 	}
-
+	//
 	if (!places)
 		return displayError('There are no places to be found.', 400, next);
-		//
+	//
 	res.status(200).json({
 		places: places.map(place => place.toObject({ getters: true })),
 	});
@@ -32,6 +30,7 @@ const getAllPlaces = async (req, res, next) => {
 const getPlaceByID = async (req, res, next) => {
 	const placeId = req.params.id;
 	let place;
+	//
 	try {
 		place = await Place.findById(placeId).exec();
 	} catch (error) {
@@ -41,12 +40,14 @@ const getPlaceByID = async (req, res, next) => {
 			next
 		);
 	}
+	//
 	if (!place)
 		return displayError(
 			'Could not find a place with the provided id.',
 			400,
 			next
 		);
+	//
 	res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 //
@@ -78,15 +79,32 @@ const getPlacesByUserID = async (req, res, next) => {
 
 const createNewUserPlace = async (req, res, next) => {
 	const errors = validationResult(req);
+	let user;
+	let place;
+	//
 	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
 	//
 	const { title, description, imageUrl, address, creator } = req.body;
 	let coordinates;
+	//
 	try {
 		coordinates = await getPlaceCoordinatesFromGoogle(address);
 	} catch (error) {
 		return next(error);
 	}
+	//
+
+	try {
+		user = await User.findById(creator);
+		console.log(user.places)
+	} catch (error) {
+		return displayError('Error finding that user', 500, next);
+	}
+
+	if (!user)
+		return displayError('No user user found with that id', 400, next);
+
+	//
 	const newUserPlace = new Place({
 		title,
 		description,
@@ -95,24 +113,45 @@ const createNewUserPlace = async (req, res, next) => {
 		address,
 		creator,
 	});
-
 	try {
-		await newUserPlace.save();
+		place = await Place.find({});
+		
 	} catch (error) {
+		return displayError(
+			'Something went wrong. Please try again.',
+			500,
+			next
+		);
+	}
+console.log(place)
+	//
+	try {
+		if (place.length ===0 || place.length > 0) {
+			const newSession = await mongoose.startSession();
+			newSession.startTransaction();
+			await newUserPlace.save({ session: newSession });
+			user.places.push(newUserPlace._id);
+			await user.save({ session: newSession });
+			await newSession.commitTransaction();
+		}
+
+		//;
+	} catch (error) {
+		return next(error)
 		return displayError(
 			'Creating a new place failed, please try again.',
 			500,
 			next
 		);
 	}
+	//
 	res.status(201).json({ place: newUserPlace.toObject({ getters: true }) });
 };
 
 const deleteUserPlace = async (req, res, next) => {
 	const placeId = req.params.id;
-
-	//	throw new HttpError('Could not find a place with that id.', 404);
 	let placeToDelete;
+	//
 	try {
 		placeToDelete = await Place.deleteOne({ _id: placeId }).exec();
 	} catch (error) {
@@ -122,7 +161,7 @@ const deleteUserPlace = async (req, res, next) => {
 			next
 		);
 	}
-
+	//
 	res.status(201).json({
 		message: 'Successfully deleted',
 		placeToDelete,
@@ -132,13 +171,14 @@ const deleteUserPlace = async (req, res, next) => {
 const updateUserPlace = async (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
-
+	//
 	const placeId = req.params.id;
 	const { title, description } = req.body;
-
+	//
 	let place;
 	const docToUpdate = { _id: placeId };
 	const updatedData = { $set: { title: title, description: description } };
+	//
 	try {
 		place = await Place.findOneAndUpdate(docToUpdate, updatedData);
 	} catch (error) {
@@ -148,7 +188,7 @@ const updateUserPlace = async (req, res, next) => {
 			next
 		);
 	}
-
+	//
 	res.status(201).json({ place: place.toObject({ getters: true }) });
 };
 
