@@ -95,16 +95,26 @@ const createNewUserPlace = async (req, res, next) => {
 	res.status(201).json({ place: newUserPlace.toObject({ getters: true }) });
 };
 
-const deleteUserPlace = (req, res, next) => {
+const deleteUserPlace = async (req, res, next) => {
 	const placeId = req.params.id;
-	if (!PLACES_DB.find(place => place.id === placeId))
-		throw new HttpError('Could not find a place with that id.', 404);
 
-	PLACES_DB = PLACES_DB.filter(place => place.id !== placeId);
+	//	throw new HttpError('Could not find a place with that id.', 404);
+	let placeToDelete;
+	try {
+		placeToDelete = await Place.deleteOne({ _id: placeId }).exec();
+	} catch (error) {
+		return displayError(
+			'Delete place failed, please try again.',
+			500,
+			next
+		);
+	}
+
+	console.log(placeToDelete);
 
 	res.status(201).json({
 		message: 'Successfully deleted',
-		places: PLACES_DB,
+		placeToDelete,
 	});
 };
 
@@ -115,7 +125,6 @@ const updateUserPlace = async (req, res, next) => {
 	const placeId = req.params.id;
 	const { title, description } = req.body;
 
-	
 	let place;
 	const docToUpdate = { _id: placeId };
 	const updatedData = { $set: { title: title, description: description } };
