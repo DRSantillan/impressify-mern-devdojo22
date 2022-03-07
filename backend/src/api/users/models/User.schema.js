@@ -13,4 +13,4 @@ const userSchema = new Schema({
 
 userSchema.plugin(uniqueValidator)
 
-export default model('Users', userSchema);
+export default model('User', userSchema);

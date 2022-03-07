@@ -1,7 +1,5 @@
-import { USERS_DATA } from '../../../data/db.js';
 import HttpError from '../../../errors/HttpError.js';
 import User from '../models/User.schema.js';
-import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
 import { displayError } from '../../../errors/Errors.controller.js';
 const imageUrlPlaceHolder =
@@ -45,7 +43,7 @@ const getAllUsers = async (req, res, next) => {
 		users: users.map(user => user.toObject({ getters: true })),
 	});
 };
-
+//
 const authenticateUser = async (req, res, next) => {
 	const errors = validationResult(req);
 
@@ -72,7 +70,7 @@ const authenticateUser = async (req, res, next) => {
 		user: user.toObject({ getters: true }),
 	});
 };
-
+//
 const registerNewUser = async (req, res, next) => {
 	const errors = validationResult(req);
 
