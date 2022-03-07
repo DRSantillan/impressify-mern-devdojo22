@@ -28,24 +28,21 @@ const getPlaceByID = async (req, res, next) => {
 			next
 		);
 	}
-	//const place = PLACES_DB.find(place => place.id === placeId);
 	if (!place)
 		return displayError(
 			'Could not find a place with the provided id.',
 			400,
 			next
 		);
-
 	res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 //
 const getPlacesByUserID = async (req, res, next) => {
 	const uid = req.params.uid;
-
 	let places;
-
+	//
 	try {
-		places = await Place.find({creator: uid}).exec();
+		places = await Place.find({ creator: uid }).exec();
 	} catch (error) {
 		return displayError(
 			'Something went wrong! Could not find any places, Please try again.',
@@ -53,19 +50,22 @@ const getPlacesByUserID = async (req, res, next) => {
 			next
 		);
 	}
-
+	//
 	if (!places || places.length === 0)
-		throw displayError(
+		return displayError(
 			'Could not find places with the provided user id.',
-			400
+			400,
+			next
 		);
 
-	res.status(200).json({ places: places.map(place => place.toObject({getters: true})) });
+	res.status(200).json({
+		places: places.map(place => place.toObject({ getters: true })),
+	});
 };
 
 const createNewUserPlace = async (req, res, next) => {
 	const errors = validationResult(req);
-	if (!errors.isEmpty()) return next(new HttpError(`Invalid inputs!`, 422));
+	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
 	//
 	const { title, description, imageUrl, address, creator } = req.body;
 	let coordinates;
@@ -74,9 +74,6 @@ const createNewUserPlace = async (req, res, next) => {
 	} catch (error) {
 		return next(error);
 	}
-
-	//onst id = uuidv4();
-
 	const newUserPlace = new Place({
 		title,
 		description,
@@ -89,13 +86,13 @@ const createNewUserPlace = async (req, res, next) => {
 	try {
 		await newUserPlace.save();
 	} catch (error) {
-		return next(
-			new HttpError('Creating a new place failed, please try again.', 500)
+		return displayError(
+			'Creating a new place failed, please try again.',
+			500,
+			next
 		);
 	}
-
-	//PLACES_DB.push(newUserPlace);
-	res.status(201).json({ place: newUserPlace });
+	res.status(201).json({ place: newUserPlace.toObject({ getters: true }) });
 };
 
 const deleteUserPlace = (req, res, next) => {
@@ -111,27 +108,28 @@ const deleteUserPlace = (req, res, next) => {
 	});
 };
 
-const updateUserPlace = (req, res, next) => {
+const updateUserPlace = async (req, res, next) => {
 	const errors = validationResult(req);
-	if (!errors.isEmpty()) throw new HttpError(`Invalid inputs!`, 422);
+	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
 
 	const placeId = req.params.id;
 	const { title, description } = req.body;
 
-	// get the place to update and put into a new object to work with without directly updating the current state
-	const placeToUpdate = PLACES_DB.find(place => place.id === placeId);
-	// get the index of the object in the array to update later with new data
-	const placeIndex = PLACES_DB.findIndex(place => place.id === placeId);
-	// create a new object and spread the previous object state and add the updated fields
-	const updatedPlace = {
-		...placeToUpdate,
-		title,
-		description,
-	};
-	// now locate the object to be updated with the new state object
-	PLACES_DB[placeIndex] = updatedPlace;
+	
+	let place;
+	const docToUpdate = { _id: placeId };
+	const updatedData = { $set: { title: title, description: description } };
+	try {
+		place = await Place.findOneAndUpdate(docToUpdate, updatedData);
+	} catch (error) {
+		return displayError(
+			'Something went wrong, could not update',
+			500,
+			next
+		);
+	}
 
-	res.status(201).json({ place: updatedPlace });
+	res.status(201).json({ place: place.toObject({ getters: true }) });
 };
 
 export {
