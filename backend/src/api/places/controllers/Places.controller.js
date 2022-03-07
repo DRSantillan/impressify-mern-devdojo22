@@ -9,11 +9,24 @@ const imageUrlPlaceHolder =
 	'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
 let PLACES_DB = USER_PLACES_DATA;
 //
-const getAllPlaces = (req, res, next) => {
-	const places = PLACES_DB;
+const getAllPlaces = async (req, res, next) => {
+	let places;
+	try {
+		places = await Place.find({});
+	} catch (error) {
+		return displayError(
+			'Could not retrieve any places, try again.',
+			500,
+			next
+		);
+	}
 
-	if (!places) throw new HttpError('There are no places to be found.', 400);
-	res.status(200).json({ places });
+	if (!places)
+		return displayError('There are no places to be found.', 400, next);
+		//
+	res.status(200).json({
+		places: places.map(place => place.toObject({ getters: true })),
+	});
 };
 //
 const getPlaceByID = async (req, res, next) => {
@@ -109,8 +122,6 @@ const deleteUserPlace = async (req, res, next) => {
 			next
 		);
 	}
-
-	console.log(placeToDelete);
 
 	res.status(201).json({
 		message: 'Successfully deleted',
