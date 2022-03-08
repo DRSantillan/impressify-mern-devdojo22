@@ -14,77 +14,62 @@ import useForm from '../../../hooks/useForm.hook';
 import { AuthenticationContext } from '../../../context/auth/AuthenticationContext.context';
 import ErrorModal from '../../ui/modal/error/ErrorModal.component';
 import LoadingSpinner from '../../ui/spinner/LoadingSpinner.component';
+import useHttpClient from '../../../hooks/http/useHttpClient.hook';
 import '../../../pages/places/new/NewPlace.styles.scss';
 
 const AuthenticationForm = ({ newUser }) => {
 	const auth = useContext(AuthenticationContext);
 	const [formState, inputHandler, setFormData] = useForm({}, false);
-	const [isLoading, setIsLoading] = useState(false);
+	//const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const { name, email, password } = formState.inputs;
+
+	const { errorHandler, errorMessage, isLoading, httpRequest } =
+		useHttpClient();
 	const userSignInHandler = async event => {
 		event.preventDefault();
-
+		//
 		if (newUser) {
 			try {
-				setIsLoading(true);
-				const response = await fetch(REGISTER_NEW_USER_URL, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
+				//
+				await httpRequest(
+					REGISTER_NEW_USER_URL,
+					'POST',
+					JSON.stringify({
 						name: name.value,
 						email: email.value,
 						password: password.value,
 					}),
-				});
-				const data = await response.json();
-				if (!response.ok) throw new Error(data.message);
-
-				if (data.registered) {
-					setIsLoading(false);
-					auth.loginUser();
-				}
-			} catch (error) {
-				setIsLoading(false);
-				setError(
-					error.message ||
-						'Ooops! Something is not right, please try agin'
+					{ 'Content-Type': 'application/json' }
 				);
-			}
+				//
+				auth.loginUser();
+			} catch (error) {}
 		} else {
 			try {
-				setIsLoading(true);
-				const response = await fetch(AUTHENTICATE_USER_URL, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
+				//
+				await httpRequest(
+					AUTHENTICATE_USER_URL,
+					'POST',
+					JSON.stringify({
 						email: email.value,
 						password: password.value,
 					}),
-				});
-				const data = await response.json();
-				if (!response.ok) throw new Error(data.message);
-				if (data.authenticated) {
-					setIsLoading(false);
-					auth.loginUser();
-				}
-			} catch (error) {
-				setIsLoading(false);
-				setError(
-					error.message ||
-						'Ooops! Something is not right, please try agin'
+					{ 'Content-Type': 'application/json' }
 				);
-			}
+				//
+				auth.loginUser();
+			} catch (error) {}
 		}
+	};
 
-		//auth.loginUser();
-	};
-	const errorHandler = () => {
-		setError(null);
-	};
 	return (
 		<>
-			<ErrorModal error={error} show={error} onClear={errorHandler} />
+			<ErrorModal
+				error={errorMessage}
+				show={errorMessage}
+				onClear={errorHandler}
+			/>
 			<form onSubmit={userSignInHandler}>
 				{isLoading && <LoadingSpinner asOverlay />}
 				{newUser && (
