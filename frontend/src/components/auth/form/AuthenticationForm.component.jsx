@@ -20,8 +20,6 @@ import '../../../pages/places/new/NewPlace.styles.scss';
 const AuthenticationForm = ({ newUser }) => {
 	const auth = useContext(AuthenticationContext);
 	const [formState, inputHandler, setFormData] = useForm({}, false);
-	//const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState(null);
 	const { name, email, password } = formState.inputs;
 
 	const { errorHandler, errorMessage, isLoading, httpRequest } =
@@ -32,7 +30,7 @@ const AuthenticationForm = ({ newUser }) => {
 		if (newUser) {
 			try {
 				//
-				await httpRequest(
+				const data = await httpRequest(
 					REGISTER_NEW_USER_URL,
 					'POST',
 					JSON.stringify({
@@ -43,12 +41,12 @@ const AuthenticationForm = ({ newUser }) => {
 					{ 'Content-Type': 'application/json' }
 				);
 				//
-				auth.loginUser();
+				auth.loginUser(data.user.id);
 			} catch (error) {}
 		} else {
 			try {
 				//
-				await httpRequest(
+				const data = await httpRequest(
 					AUTHENTICATE_USER_URL,
 					'POST',
 					JSON.stringify({
@@ -58,7 +56,7 @@ const AuthenticationForm = ({ newUser }) => {
 					{ 'Content-Type': 'application/json' }
 				);
 				//
-				auth.loginUser();
+				auth.loginUser(data.user.id);
 			} catch (error) {}
 		}
 	};

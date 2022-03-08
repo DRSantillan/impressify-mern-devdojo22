@@ -23,11 +23,7 @@ const PlaceItem = ({
 	const closeGoogleMapHandler = () => setShowMap(false);
 	const openConfirmationHandler = () => setShowConfirmation(true);
 	const closeConfirmationHandler = () => setShowConfirmation(false);
-	const deletePlaceHandler = id => {
-		console.log(id);
-		setShowConfirmation(false);
-		//Navigate({ to: `/places/new`});
-	};
+	const deletePlaceHandler = id => setShowConfirmation(false);;
 	//
 	return (
 		<>

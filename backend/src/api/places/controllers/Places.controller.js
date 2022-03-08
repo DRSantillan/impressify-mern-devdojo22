@@ -113,6 +113,7 @@ const createNewUserPlace = async (req, res, next) => {
 		address,
 		creator,
 	});
+	
 	try {
 		place = await Place.find({});
 	} catch (error) {
@@ -122,7 +123,7 @@ const createNewUserPlace = async (req, res, next) => {
 			next
 		);
 	}
-	console.log(place);
+	
 	//
 	try {
 		if (place.length === 0 || place.length > 0) {
@@ -136,6 +137,7 @@ const createNewUserPlace = async (req, res, next) => {
 
 		//;
 	} catch (error) {
+		return next(error)
 		return displayError(
 			'Creating a new place failed, please try again.',
 			500,

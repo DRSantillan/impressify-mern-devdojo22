@@ -2,7 +2,7 @@ import {
 	BrowserRouter as Router,
 	Routes,
 	Route,
-	Navigate
+	Navigate,
 } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import Users from '../../pages/users/Users.page';
@@ -15,14 +15,15 @@ import { AuthenticationContext } from '../../context/auth/AuthenticationContext.
 import './App.css';
 
 function App() {
-	
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const loginUser = useCallback(() => {
+	const [userId, setUserId] = useState(null);
+	const loginUser = useCallback(uid => {
 		setIsLoggedIn(true);
+		setUserId(uid);
 	}, []);
-	const logoutUser = useCallback(() => {
+	const logoutUser = useCallback(uid => {
 		setIsLoggedIn(false);
-		
+		setUserId(null);
 	}, []);
 	let routes;
 
@@ -33,7 +34,7 @@ function App() {
 				<Route path='/:userId/places' element={<Places />} exact />
 				<Route path='/places/new' element={<NewPlace />} />
 				<Route path='/places/:placeId' element={<UpdatePlace />} />
-				 <Route path='/*' element={<Navigate to='/' />} /> 
+				<Route path='/*' element={<Navigate to='/' />} />
 			</>
 		);
 	} else {
@@ -42,13 +43,13 @@ function App() {
 				<Route path='/' element={<Users />} />
 				<Route path='/:userId/places' element={<Places />} exact />
 				<Route path='/authenticate' element={<Authentication />} />
-				 <Route path='/*' element={<Navigate to='/' />} /> 
+				<Route path='/*' element={<Navigate to='/' />} />
 			</>
 		);
 	}
 	return (
 		<AuthenticationContext.Provider
-			value={{ isLoggedIn, loginUser, logoutUser }}
+			value={{ isLoggedIn, loginUser, logoutUser, userId }}
 		>
 			<Router>
 				<Navigation />

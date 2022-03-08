@@ -11,9 +11,8 @@ const PlacesList = ({ placeItems }) => {
 			<div className='place-list center'>
 				<Card>
 					<h2>
-						No places were found. Maybe{' '}
-						<Link to='/places/new'>Create One here</Link>
-						<Button to='/places/new'>Share Place</Button>
+						No places were found!
+						<br/><br/><Button to='/places/new'>Share Place</Button>
 					</h2>
 				</Card>
 			</div>

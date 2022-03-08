@@ -5,7 +5,8 @@ import Card from '../../ui/card/Card.component';
 import './UserItem.styles.scss';
 
 const UserItem = ({ id, imageUrl, name, places }) => {
-	if(places.length === 0) places = 'No';
+	console.log(imageUrl, id)
+	//if(places.length === 0) places = 'No';
 	return (
 		<li>
 			<div className='user-item'>
@@ -16,7 +17,7 @@ const UserItem = ({ id, imageUrl, name, places }) => {
 						</div>
 						<div className='user-item__info'>
 							<h2>{name}</h2>
-							<h3>{places} Places</h3>
+							<h3>{places.length} Places</h3>
 						</div>
 					</Link>
 				</Card>
