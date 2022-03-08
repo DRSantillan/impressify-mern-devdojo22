@@ -24,7 +24,7 @@ const Users = () => {
 		getAllUsers();
 	}, [httpRequest]);
 
-	console.log(usersArray)
+	
 
 	return (
 		<>

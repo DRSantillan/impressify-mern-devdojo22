@@ -64,6 +64,7 @@ const getPlacesByUserID = async (req, res, next) => {
 			next
 		);
 	}
+	
 	//
 	if (!allUserPlaces || allUserPlaces.places.length === 0)
 		return displayError(
@@ -73,7 +74,9 @@ const getPlacesByUserID = async (req, res, next) => {
 		);
 
 	res.status(200).json({
-		places: allUserPlaces.places.map(place => place.toObject({ getters: true })),
+		places: allUserPlaces.places.map(place =>
+			place.toObject({ getters: true })
+		),
 	});
 };
 //
@@ -113,7 +116,7 @@ const createNewUserPlace = async (req, res, next) => {
 		address,
 		creator,
 	});
-	
+
 	try {
 		place = await Place.find({});
 	} catch (error) {
@@ -123,7 +126,7 @@ const createNewUserPlace = async (req, res, next) => {
 			next
 		);
 	}
-	
+
 	//
 	try {
 		if (place.length === 0 || place.length > 0) {
@@ -137,7 +140,7 @@ const createNewUserPlace = async (req, res, next) => {
 
 		//;
 	} catch (error) {
-		return next(error)
+		return next(error);
 		return displayError(
 			'Creating a new place failed, please try again.',
 			500,
@@ -153,18 +156,24 @@ const deleteUserPlace = async (req, res, next) => {
 	let placeToDelete;
 
 	try {
-		placeToDelete = await Place.findById(placeId).populate('creator').exec()
+		placeToDelete = await Place.findById(placeId)
+			.populate('creator')
+			.exec();
 	} catch (error) {
-		return displayError('Something went wrong! Please try again.', 500, next)
+		return displayError(
+			'Something went wrong! Please try again.',
+			500,
+			next
+		);
 	}
 	//
 	try {
-		const newSession = await mongoose.startSession()
-		newSession.startTransaction()
-		await placeToDelete.deleteOne( {_id: placeId, session: newSession });
+		const newSession = await mongoose.startSession();
+		newSession.startTransaction();
+		await placeToDelete.deleteOne({ _id: placeId, session: newSession });
 		placeToDelete.creator.places.pull(placeToDelete._id);
-		await placeToDelete.creator.save({session: newSession})
-		newSession.commitTransaction()
+		await placeToDelete.creator.save({ session: newSession });
+		newSession.commitTransaction();
 	} catch (error) {
 		return displayError(
 			'Delete place failed, please try again.',

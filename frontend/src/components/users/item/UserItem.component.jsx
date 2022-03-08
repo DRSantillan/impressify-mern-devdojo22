@@ -5,8 +5,7 @@ import Card from '../../ui/card/Card.component';
 import './UserItem.styles.scss';
 
 const UserItem = ({ id, imageUrl, name, places }) => {
-	console.log(imageUrl, id)
-	//if(places.length === 0) places = 'No';
+	
 	return (
 		<li>
 			<div className='user-item'>

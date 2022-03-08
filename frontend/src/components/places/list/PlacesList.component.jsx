@@ -4,18 +4,13 @@ import Card from '../../../components/ui/card/Card.component';
 import PlaceItem from '../item/PlaceItem.component';
 import Button from '../../../components/ui/button/Button.component';
 import './PlacesList.styles.scss';
+import NoDataDisplay from '../no-data/NoDataDisplay.component';
 
 const PlacesList = ({ placeItems }) => {
+	console.log(placeItems)
 	if (placeItems.length === 0) {
 		return (
-			<div className='place-list center'>
-				<Card>
-					<h2>
-						No places were found!
-						<br/><br/><Button to='/places/new'>Share Place</Button>
-					</h2>
-				</Card>
-			</div>
+			<NoDataDisplay/>
 		);
 	}
 

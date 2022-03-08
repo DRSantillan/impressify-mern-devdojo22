@@ -15,6 +15,7 @@ const PlaceItem = ({
 	creatorId,
 	location,
 }) => {
+	console.log(location)
 	const auth = useContext(AuthenticationContext);
 	const [showMap, setShowMap] = useState(false);
 	const [showConfirmation, setShowConfirmation] = useState(false);
