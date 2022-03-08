@@ -50,11 +50,14 @@ const authenticateUser = async (req, res, next) => {
 	if (!errors.isEmpty()) throw new HttpError(`Invalid inputs!`, 422);
 
 	const { email, password } = req.body;
+	
 	let user;
 
 	try {
 		user = await User.findOne({ email: email, password: password }).exec();
+		
 	} catch (error) {
+		
 		return displayError(
 			'No user was found with those credentials.',
 			401,
@@ -62,8 +65,9 @@ const authenticateUser = async (req, res, next) => {
 		);
 	}
 
-	if (!user)
-		return displayError('No user was found with those credentials.', 401);
+	if (!user){
+		
+		return displayError('No user was found with those credentials.', 404,next);}
 
 	res.status(201).json({
 		authenticated: true,

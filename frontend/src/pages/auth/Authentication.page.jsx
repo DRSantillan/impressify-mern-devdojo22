@@ -6,6 +6,7 @@ import Card from '../../components/ui/card/Card.component';
 
 const Authentication = () => {
 	const [isNewUser, setIsNewUser] = useState(false);
+	
 
 	const switchFormHandler = () => {
 		setIsNewUser(prevState => !prevState);
@@ -14,7 +15,7 @@ const Authentication = () => {
 		<Card className='authentication'>
 			<h2>{isNewUser ? 'Register New Account' : 'Login Required'}</h2>
 			<hr />
-			<AuthenticationForm newUser={isNewUser} />
+			<AuthenticationForm newUser={isNewUser}  />
 
 			<Button inverse onClick={switchFormHandler}>
 				{!isNewUser ? 'Register New Account' : 'Login'}
