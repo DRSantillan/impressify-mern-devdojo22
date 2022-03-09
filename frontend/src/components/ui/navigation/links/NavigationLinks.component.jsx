@@ -4,7 +4,7 @@ import { AuthenticationContext } from '../../../../context/auth/AuthenticationCo
 import './NavigationLinks.styles.scss';
 
 const NavigationLinks = () => {
-	const auth = useContext(AuthenticationContext);
+	const {userId, logoutUser, isLoggedIn} = useContext(AuthenticationContext);
 	return (
 		<ul className='nav-links'>
 			<li>
@@ -12,15 +12,15 @@ const NavigationLinks = () => {
 					All Users
 				</NavLink>
 			</li>
-			{auth.isLoggedIn && <><li>
-				<NavLink to='/39883dkj/places'>My Places</NavLink>
+			{isLoggedIn && <><li>
+				<NavLink to={`/${userId}/places`}>My Places</NavLink>
 			</li>
 			<li>
 				<NavLink to='/places/new'>Add New Place</NavLink>
 			</li></>}
-			{!auth.isLoggedIn ? <li>
+			{!isLoggedIn ? <li>
 				<NavLink to='/authenticate'>Sign In</NavLink>
-			</li>: <li><NavLink to='/authenticate' onClick={auth.logoutUser}>Log Out</NavLink></li>}
+			</li>: <li><NavLink to='/authenticate' onClick={logoutUser}>Log Out</NavLink></li>}
 			
 		</ul>
 	);

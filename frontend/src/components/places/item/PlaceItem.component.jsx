@@ -18,11 +18,11 @@ const PlaceItem = ({
 	title,
 	address,
 	description,
-	creatorId,
+	creator,
 	location,
 	onDelete,
 }) => {
-	const auth = useContext(AuthenticationContext);
+	const {userId} = useContext(AuthenticationContext);
 	const { isLoading, errorHandler, httpRequest, errorMessage } =
 		useHttpClient();
 	const [showMap, setShowMap] = useState(false);
@@ -40,7 +40,7 @@ const PlaceItem = ({
 			onDelete(id);
 		} catch (error) {}
 
-		navigate(`/${auth.userId}/places`);
+		navigate(`/${userId}/places`);
 	};
 	//
 	return (
@@ -95,7 +95,7 @@ const PlaceItem = ({
 						<Button inverse onClick={openGoogleMapHandler}>
 							View On Map
 						</Button>
-						{auth.isLoggedIn && (
+						{userId === creator && (
 							<>
 								<Button to={`/places/${id}`}>Edit</Button>
 								<Button
