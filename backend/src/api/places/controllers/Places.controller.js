@@ -81,6 +81,7 @@ const getPlacesByUserID = async (req, res, next) => {
 };
 //
 const createNewUserPlace = async (req, res, next) => {
+	console.log(req.body)
 	const errors = validationResult(req);
 	let user;
 	let place;
@@ -197,15 +198,20 @@ const deleteUserPlace = async (req, res, next) => {
 };
 //
 const updateUserPlace = async (req, res, next) => {
+		
 	const errors = validationResult(req);
-	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
-	//
+	if (!errors.isEmpty()) return  next(errors)//displayError(`Invalid inputs!`, 422, next);
+	// //
+	
 	const placeId = req.params.id;
 	const { title, description } = req.body;
-	//
+	
+	// //
 	let place;
 	const docToUpdate = { _id: placeId };
 	const updatedData = { $set: { title: title, description: description } };
+
+	
 	//
 	try {
 		place = await Place.findOneAndUpdate(docToUpdate, updatedData);
@@ -216,7 +222,7 @@ const updateUserPlace = async (req, res, next) => {
 			next
 		);
 	}
-	//
+	// //
 	res.status(201).json({ place: place.toObject({ getters: true }) });
 };
 

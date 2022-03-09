@@ -45,7 +45,7 @@ const NewPlace = () => {
 				}),
 				{ 'Content-Type': 'application/json' }
 			);
-			navigate('/');
+			navigate(`/${userId}/places`);
 		} catch (error) {}
 	};
 	//

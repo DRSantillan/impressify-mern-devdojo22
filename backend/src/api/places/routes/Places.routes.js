@@ -21,11 +21,20 @@ const fieldsToValidate = [
 	check('address').notEmpty(),
 ];
 
+const fieldsToValidateUpdate = [
+	check('title').notEmpty(),
+	check('description').notEmpty({ min: 5 }),
+];
+
 PlacesRouter.get('/', getAllPlaces);
 PlacesRouter.get('/:id', getPlaceByID);
 PlacesRouter.get('/user/:uid', getPlacesByUserID);
 PlacesRouter.post('/', checkBodyData(fieldsToValidate), createNewUserPlace);
-PlacesRouter.put('/:id',checkBodyData(fieldsToValidate), updateUserPlace);
+PlacesRouter.put(
+	'/:id',
+	checkBodyData(fieldsToValidateUpdate),
+	updateUserPlace
+);
 PlacesRouter.delete('/:id', deleteUserPlace);
 
 export default PlacesRouter;

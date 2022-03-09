@@ -12,27 +12,29 @@ import NoDataDisplay from '../../../components/places/no-data/NoDataDisplay.comp
 
 const Places = () => {
 	const [userPlaces, setUserPlaces] = useState();
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 	const { httpRequest, errorMessage, isLoading, errorHandler } =
 		useHttpClient();
 	const userId = useParams().userId;
-	
-	
+
 	useEffect(() => {
 		const getPlacesByUserId = async () => {
 			try {
-				const data = await httpRequest(`${GET_PLACES_BY_USER_ID_URL}${userId}`);
-				
+				const data = await httpRequest(
+					`${GET_PLACES_BY_USER_ID_URL}${userId}`
+				);
+
 				setUserPlaces(data.places);
-				
-			} catch (error) {
-				
-			}
+			} catch (error) {}
 		};
 		getPlacesByUserId();
 	}, [httpRequest, userId]);
-	
-	
+
+	const onDeletePlaceHandler = deletedPlaceId => {
+		setUserPlaces(prevPlaces =>
+			prevPlaces.filter(place => place.id !== deletedPlaceId)
+		);
+	};
 	return (
 		<>
 			<ErrorModal
@@ -45,8 +47,13 @@ const Places = () => {
 					<LoadingSpinner asOverlay />
 				</div>
 			)}
-			{!isLoading && userPlaces && <PlacesList placeItems={userPlaces} />}
-			 {!userPlaces && <NoDataDisplay/>}
+			{!isLoading && userPlaces && (
+				<PlacesList
+					onDelete={onDeletePlaceHandler}
+					placeItems={userPlaces}
+				/>
+			)}
+			{!userPlaces && <NoDataDisplay />}
 		</>
 	);
 };
