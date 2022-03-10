@@ -2,6 +2,9 @@ import HttpError from '../../../errors/HttpError.js';
 import User from '../models/User.schema.js';
 import { validationResult } from 'express-validator';
 import { displayError } from '../../../errors/Errors.controller.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
 
 // const imageUrlPlaceHolder =
 // 	'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
@@ -72,9 +75,39 @@ const authenticateUser = async (req, res, next) => {
 		);
 	}
 
+	let isValidPassword = false;
+	isValidPassword = await bcrypt.compare(password, user.password);
+	if (!isValidPassword) {
+		return displayError(
+			'Invalid credentials, could not log you in.',
+			404,
+			next
+		);
+	}
+
+	let token;
+	try {
+		token = jwt.sign(
+			{
+				userId: newUser.id,
+				email: newUser.email,
+				name: newUser.name,
+			},
+			process.env.IMPRESSIFY_SECRET_KEY,
+			{ expiresIn: '1h' }
+		);
+	} catch (error) {
+		return displayError(
+			'Creating a new user failed, please try again.',
+			500,
+			next
+		);
+	}
+
 	res.status(201).json({
 		authenticated: true,
 		user: user.toObject({ getters: true }),
+		token: token
 	});
 };
 //
@@ -102,10 +135,17 @@ const registerNewUser = async (req, res, next) => {
 			next
 		);
 
+	let hashedPassword;
+	try {
+		hashedPassword = await bcrypt.hash(password, 12);
+	} catch (error) {
+		return displayError('Could not create user, please try again.', 500);
+	}
+
 	const newUser = new User({
 		name,
 		email,
-		password,
+		password: hashedPassword,
 		imageUrl: req.file.path,
 		places: [],
 	});
@@ -120,9 +160,29 @@ const registerNewUser = async (req, res, next) => {
 		);
 	}
 
+	let token;
+	try {
+		token = jwt.sign(
+			{
+				userId: newUser.id,
+				email: newUser.email,
+				name: newUser.name,
+			},
+			process.env.IMPRESSIFY_SECRET_KEY,
+			{ expiresIn: '1h' }
+		);
+	} catch (error) {
+		return displayError(
+			'Creating a new user failed, please try again.',
+			500,
+			next
+		);
+	}
+
 	res.status(201).json({
 		registered: true,
 		user: newUser.toObject({ getters: true }),
+		token: token,
 	});
 };
 

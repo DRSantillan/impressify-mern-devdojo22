@@ -6,6 +6,7 @@ import Place from '../models/Place.schema.js';
 import { displayError } from '../../../errors/Errors.controller.js';
 import User from '../../users/models/User.schema.js';
 
+
 //
 const getAllPlaces = async (req, res, next) => {
 	let places;
