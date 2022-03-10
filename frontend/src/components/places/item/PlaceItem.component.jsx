@@ -22,7 +22,7 @@ const PlaceItem = ({
 	location,
 	onDelete,
 }) => {
-	const {userId} = useContext(AuthenticationContext);
+	const {userId, token} = useContext(AuthenticationContext);
 	const { isLoading, errorHandler, httpRequest, errorMessage } =
 		useHttpClient();
 	const [showMap, setShowMap] = useState(false);
@@ -36,7 +36,9 @@ const PlaceItem = ({
 	const deletePlaceHandler = async () => {
 		setShowConfirmation(false);
 		try {
-			await httpRequest(`${DELETE_USER_PLACE_URL}${id}`, 'DELETE');
+			await httpRequest(`${DELETE_USER_PLACE_URL}${id}`, 'DELETE',null, {
+				Authorization: `Bearer ${token}`,
+			});
 			onDelete(id);
 		} catch (error) {}
 

@@ -13,7 +13,7 @@ const getUserByID = async (req, res, next) => {
 	const uid = req.params.uid;
 	let user;
 	try {
-		user = await User.findById(uid).exec();
+		user = await User.findById(uid, '-password').exec();
 	} catch (error) {
 		return displayError(
 			'Something went wrong! Please try again.',
@@ -58,7 +58,7 @@ const authenticateUser = async (req, res, next) => {
 	let user;
 
 	try {
-		user = await User.findOne({ email: email, password: password }).exec();
+		user = await User.findOne({ email: email }).exec();
 	} catch (error) {
 		return displayError(
 			'No user was found with those credentials.',
@@ -89,14 +89,15 @@ const authenticateUser = async (req, res, next) => {
 	try {
 		token = jwt.sign(
 			{
-				userId: newUser.id,
-				email: newUser.email,
-				name: newUser.name,
+				userId: user.id,
+				email: user.email,
+				name: user.name,
 			},
 			process.env.IMPRESSIFY_SECRET_KEY,
 			{ expiresIn: '1h' }
 		);
 	} catch (error) {
+		
 		return displayError(
 			'Creating a new user failed, please try again.',
 			500,

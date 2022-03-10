@@ -4,7 +4,6 @@ import {
 	Route,
 	Navigate,
 } from 'react-router-dom';
-import { useState, useCallback } from 'react';
 import Users from '../../pages/users/Users.page';
 import Places from '../../pages/places/places/Places.page';
 import NewPlace from '../../pages/places/new/NewPlace.page';
@@ -12,22 +11,19 @@ import UpdatePlace from '../../pages/places/update/UpdatePlace.component';
 import Navigation from '../../components/ui/navigation/Navigation.component';
 import Authentication from '../../pages/auth/Authentication.page';
 import { AuthenticationContext } from '../../context/auth/AuthenticationContext.context';
+import useAuthorization from '../../hooks/auth/useAuthorization.hook';
 import './App.css';
 
+//
+
+
 function App() {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [userId, setUserId] = useState(null);
-	const loginUser = useCallback(uid => {
-		setIsLoggedIn(true);
-		setUserId(uid);
-	}, []);
-	const logoutUser = useCallback(uid => {
-		setIsLoggedIn(false);
-		setUserId(null);
-	}, []);
+	const {authToken, userId, loginUser, logoutUser} = useAuthorization()
+	
+
 	let routes;
 
-	if (isLoggedIn) {
+	if (authToken) {
 		routes = (
 			<>
 				<Route path='/' element={<Users />} />
@@ -49,7 +45,13 @@ function App() {
 	}
 	return (
 		<AuthenticationContext.Provider
-			value={{ isLoggedIn, loginUser, logoutUser, userId }}
+			value={{
+				isLoggedIn: !!authToken,
+				loginUser,
+				logoutUser,
+				userId,
+				token: authToken,
+			}}
 		>
 			<Router>
 				<Navigation />

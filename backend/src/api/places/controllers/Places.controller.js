@@ -6,7 +6,6 @@ import Place from '../models/Place.schema.js';
 import { displayError } from '../../../errors/Errors.controller.js';
 import User from '../../users/models/User.schema.js';
 
-
 //
 const getAllPlaces = async (req, res, next) => {
 	let places;
@@ -89,7 +88,7 @@ const createNewUserPlace = async (req, res, next) => {
 	//
 	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
 	//
-	const { title, description, address, creator } = req.body;
+	const { title, description, address } = req.body;
 	let coordinates;
 	//
 	try {
@@ -100,7 +99,7 @@ const createNewUserPlace = async (req, res, next) => {
 	//
 
 	try {
-		user = await User.findById(creator);
+		user = await User.findById(req.userData.userId);
 		console.log(user.places);
 	} catch (error) {
 		return displayError('Error finding that user', 500, next);
@@ -116,7 +115,7 @@ const createNewUserPlace = async (req, res, next) => {
 		imageUrl: req.file.path,
 		location: coordinates,
 		address,
-		creator,
+		creator: req.userData.userId,
 	});
 
 	try {
@@ -131,17 +130,16 @@ const createNewUserPlace = async (req, res, next) => {
 
 	//
 	try {
-		if (place.length === 0 || place.length > 0) {
-			const newSession = await mongoose.startSession();
-			newSession.startTransaction();
-			await newUserPlace.save({ session: newSession });
-			user.places.push(newUserPlace._id);
-			await user.save({ session: newSession });
-			await newSession.commitTransaction();
-		}
+		const newSession = await mongoose.startSession();
+		newSession.startTransaction();
+		await newUserPlace.save({ session: newSession });
+		user.places.push(newUserPlace._id);
+		await user.save({ session: newSession });
+		await newSession.commitTransaction();
 
 		//;
 	} catch (error) {
+		return next(error);
 		return displayError(
 			'Creating a new place failed, please try again.',
 			500,
@@ -167,6 +165,14 @@ const deleteUserPlace = async (req, res, next) => {
 			next
 		);
 	}
+
+	if (placeToDelete.creator.id !== req.userData.userId)
+		return displayError(
+			'You do not have authorization to delete this data!',
+			401,
+			next
+		);
+
 	const imagePath = placeToDelete.imageUrl;
 	//
 	try {
@@ -190,7 +196,7 @@ const deleteUserPlace = async (req, res, next) => {
 			404,
 			next
 		);
-		//delete image file
+	//delete image file
 	fs.unlink(imagePath, error => console.log(error));
 	//
 	res.status(201).json({
@@ -222,6 +228,12 @@ const updateUserPlace = async (req, res, next) => {
 			next
 		);
 	}
+	if (place.creator.toString() !== req.userData.userId)
+		return displayError(
+			'You do not have authorization to edit this data!',
+			401,
+			next
+		);
 	// //
 	res.status(201).json({ place: place.toObject({ getters: true }) });
 };

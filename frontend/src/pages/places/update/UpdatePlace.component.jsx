@@ -17,7 +17,7 @@ import '../new/NewPlace.styles.scss';
 
 const UpdatePlace = () => {
 	const navigate = useNavigate();
-	const { userId } = useContext(AuthenticationContext);
+	const { userId, token } = useContext(AuthenticationContext);
 	const { isLoading, errorHandler, errorMessage, httpRequest } =
 		useHttpClient();
 	const [loadedPlace, setLoadedPlace] = useState();
@@ -66,7 +66,10 @@ const UpdatePlace = () => {
 					title: title.value,
 					description: description.value,
 				}),
-				{ 'Content-Type': 'application/json' }
+				{
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				}
 			);
 		} catch (error) {}
 		//

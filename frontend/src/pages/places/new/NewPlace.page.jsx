@@ -16,7 +16,9 @@ import { CREATE_NEW_USER_PLACE_URL } from '../../../config/api.urls.config';
 import { AuthenticationContext } from '../../../context/auth/AuthenticationContext.context';
 
 const NewPlace = () => {
-	const { userId } = useContext(AuthenticationContext);
+	const { userId, token } = useContext(AuthenticationContext);
+	console.log(token);
+
 	const navigate = useNavigate();
 	const { isLoading, errorMessage, errorHandler, httpRequest } =
 		useHttpClient();
@@ -33,16 +35,19 @@ const NewPlace = () => {
 	const formSubmitHandler = async event => {
 		event.preventDefault();
 		const { title, description, address, imageUrl } = formState.inputs;
-		console.log(formState)
+		console.log(formState);
 		try {
+			//
 			const formData = new FormData();
 			formData.append('title', title.value);
 			formData.append('description', description.value);
 			formData.append('imageUrl', imageUrl.value);
 			formData.append('address', address.value);
-			formData.append('creator', userId);
+
 			//
-			await httpRequest(CREATE_NEW_USER_PLACE_URL, 'POST', formData);
+			await httpRequest(CREATE_NEW_USER_PLACE_URL, 'POST', formData, {
+				Authorization: `Bearer ${token}`,
+			});
 			navigate(`/${userId}/places`);
 		} catch (error) {}
 	};

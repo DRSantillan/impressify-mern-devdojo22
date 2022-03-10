@@ -51,7 +51,7 @@ const AuthenticationForm = ({ newUser }) => {
 					formData
 				);
 				//
-				loginUser(data.user.id);
+				loginUser(data.user.id, data.token);
 			} catch (error) {}
 		} else {
 			try {
@@ -66,7 +66,7 @@ const AuthenticationForm = ({ newUser }) => {
 					{ 'Content-Type': 'application/json' }
 				);
 				//
-				loginUser(data.user.id);
+				loginUser(data.user.id, data.token);
 			} catch (error) {}
 		}
 	};
