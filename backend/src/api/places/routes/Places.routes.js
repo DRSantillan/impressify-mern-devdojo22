@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
 import fileUpload from '../../../middleware/file-upload.js';
+import UserAuthorization from '../../../middleware/auth/UserAuthorization.js';
 
 import {
 	getPlaceByID,
@@ -30,6 +31,8 @@ const fieldsToValidateUpdate = [
 PlacesRouter.get('/', getAllPlaces);
 PlacesRouter.get('/:id', getPlaceByID);
 PlacesRouter.get('/user/:uid', getPlacesByUserID);
+
+PlacesRouter.use(UserAuthorization)
 PlacesRouter.post(
 	'/',
 	fileUpload.single('imageUrl'),
