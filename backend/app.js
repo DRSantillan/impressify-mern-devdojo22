@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import { noRouteError, showError } from './src/errors/Errors.controller.js';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -12,6 +13,8 @@ const app = express();
 app.use(cors({ origin: `${SERVER_URL}:3000` }));
 app.use(express.json());
 app.use(morgan('combined'));
+// try and seperate images by user
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 // routes
 app.get('/', (req, res) => {
@@ -40,4 +43,4 @@ const startAPIServer = async () => {
 	});
 };
 
-startAPIServer()
+startAPIServer();

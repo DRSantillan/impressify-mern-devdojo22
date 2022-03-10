@@ -11,6 +11,7 @@ import useForm from '../../../hooks/useForm.hook';
 import useHttpClient from '../../../hooks/http/useHttpClient.hook';
 import ErrorModal from '../../../components/ui/modal/error/ErrorModal.component';
 import LoadingSpinner from '../../../components/ui/spinner/LoadingSpinner.component';
+import ImageUploader from '../../../components/ui/image-uploader/ImageUploader.component';
 import { CREATE_NEW_USER_PLACE_URL } from '../../../config/api.urls.config';
 import { AuthenticationContext } from '../../../context/auth/AuthenticationContext.context';
 
@@ -19,32 +20,29 @@ const NewPlace = () => {
 	const navigate = useNavigate();
 	const { isLoading, errorMessage, errorHandler, httpRequest } =
 		useHttpClient();
-	const [formState, inputHandler] = useForm(
+	const [formState, inputHandler, setFormData] = useForm(
 		{
 			title: { value: '', isValid: false },
 			description: { value: '', isValid: false },
 			address: { value: '', isValid: false },
+			imageUrl: { value: '', isValid: false },
 		},
 		false
 	);
 	//
 	const formSubmitHandler = async event => {
 		event.preventDefault();
-		const { title, description, address } = formState.inputs;
+		const { title, description, address, imageUrl } = formState.inputs;
+		console.log(formState)
 		try {
-			await httpRequest(
-				CREATE_NEW_USER_PLACE_URL,
-				'POST',
-				JSON.stringify({
-					title: title.value,
-					description: description.value,
-					imageUrl:
-						'https://www.japanrailpass.com.au/wp-content/uploads/2016/09/Tokyo-Tower.jpg',
-					address: address.value,
-					creator: userId,
-				}),
-				{ 'Content-Type': 'application/json' }
-			);
+			const formData = new FormData();
+			formData.append('title', title.value);
+			formData.append('description', description.value);
+			formData.append('imageUrl', imageUrl.value);
+			formData.append('address', address.value);
+			formData.append('creator', userId);
+			//
+			await httpRequest(CREATE_NEW_USER_PLACE_URL, 'POST', formData);
 			navigate(`/${userId}/places`);
 		} catch (error) {}
 	};
@@ -83,6 +81,14 @@ const NewPlace = () => {
 					onInput={inputHandler}
 					validators={[VALIDATOR_MINLENGTH(5)]}
 					errorText='Please enter a valid description (at least 5 characters).'
+				/>
+				<ImageUploader
+					id='imageUrl'
+					onInput={inputHandler}
+					errorText='Please choose an image!'
+					center
+					formState={formState}
+					setFormData={setFormData}
 				/>
 				<Button type='submit' disabled={!formState.isValid}>
 					Add New Place

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import fs from 'fs';
 import { validationResult } from 'express-validator';
 import getPlaceCoordinatesFromGoogle from '../../../services/google.geocoding.api.js';
 import Place from '../models/Place.schema.js';
@@ -64,7 +65,7 @@ const getPlacesByUserID = async (req, res, next) => {
 			next
 		);
 	}
-	
+
 	//
 	if (!allUserPlaces || allUserPlaces.places.length === 0)
 		return displayError(
@@ -81,14 +82,13 @@ const getPlacesByUserID = async (req, res, next) => {
 };
 //
 const createNewUserPlace = async (req, res, next) => {
-	console.log(req.body)
 	const errors = validationResult(req);
 	let user;
 	let place;
 	//
 	if (!errors.isEmpty()) return displayError(`Invalid inputs!`, 422, next);
 	//
-	const { title, description, imageUrl, address, creator } = req.body;
+	const { title, description, address, creator } = req.body;
 	let coordinates;
 	//
 	try {
@@ -112,7 +112,7 @@ const createNewUserPlace = async (req, res, next) => {
 	const newUserPlace = new Place({
 		title,
 		description,
-		imageUrl,
+		imageUrl: req.file.path,
 		location: coordinates,
 		address,
 		creator,
@@ -141,7 +141,6 @@ const createNewUserPlace = async (req, res, next) => {
 
 		//;
 	} catch (error) {
-		return next(error);
 		return displayError(
 			'Creating a new place failed, please try again.',
 			500,
@@ -167,6 +166,7 @@ const deleteUserPlace = async (req, res, next) => {
 			next
 		);
 	}
+	const imagePath = placeToDelete.imageUrl;
 	//
 	try {
 		const newSession = await mongoose.startSession();
@@ -189,7 +189,8 @@ const deleteUserPlace = async (req, res, next) => {
 			404,
 			next
 		);
-
+		//delete image file
+	fs.unlink(imagePath, error => console.log(error));
 	//
 	res.status(201).json({
 		message: 'Successfully deleted',
@@ -198,20 +199,18 @@ const deleteUserPlace = async (req, res, next) => {
 };
 //
 const updateUserPlace = async (req, res, next) => {
-		
 	const errors = validationResult(req);
-	if (!errors.isEmpty()) return  next(errors)//displayError(`Invalid inputs!`, 422, next);
+	if (!errors.isEmpty()) return next(errors); //displayError(`Invalid inputs!`, 422, next);
 	// //
-	
+
 	const placeId = req.params.id;
 	const { title, description } = req.body;
-	
+
 	// //
 	let place;
 	const docToUpdate = { _id: placeId };
 	const updatedData = { $set: { title: title, description: description } };
 
-	
 	//
 	try {
 		place = await Place.findOneAndUpdate(docToUpdate, updatedData);

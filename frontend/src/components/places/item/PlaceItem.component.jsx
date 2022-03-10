@@ -8,7 +8,7 @@ import useHttpClient from '../../../hooks/http/useHttpClient.hook';
 import { DELETE_USER_PLACE_URL } from '../../../config/api.urls.config';
 import { useNavigate } from 'react-router-dom';
 import ErrorModal from '../../ui/modal/error/ErrorModal.component';
-
+import { IMAGE_URL } from '../../../config/api.urls.config';
 import { AuthenticationContext } from '../../../context/auth/AuthenticationContext.context';
 import LoadingSpinner from '../../ui/spinner/LoadingSpinner.component';
 
@@ -84,7 +84,7 @@ const PlaceItem = ({
 				<Card className='place-item__content'>
 					{isLoading && <LoadingSpinner asOverlay/>}
 					<div className='place-item__image'>
-						<img src={imageUrl} alt={title} />
+						<img src={`${IMAGE_URL}${imageUrl}`} alt={title} />
 					</div>
 					<div className='place-item__info'>
 						<h2>{title}</h2>

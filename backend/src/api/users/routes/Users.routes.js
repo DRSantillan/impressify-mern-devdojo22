@@ -6,7 +6,7 @@ import {
 	registerNewUser,
 	authenticateUser,
 } from '../controllers/Users.controller.js';
-
+import fileUpload from '../../../middleware/file-upload.js';
 const UsersRouter = Router();
 
 const registerToValidate = [
@@ -27,6 +27,7 @@ UsersRouter.get('/', getAllUsers);
 UsersRouter.get('/:uid', getUserByID);
 UsersRouter.post(
 	'/register',
+	fileUpload.single('imageUrl'),
 	checkBodyData(registerToValidate),
 	registerNewUser
 );

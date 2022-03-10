@@ -1,3 +1,4 @@
+import fs from 'fs';
 import HttpError from './HttpError.js';
 
 const noRouteError = (req, res, next) => {
@@ -5,6 +6,9 @@ const noRouteError = (req, res, next) => {
 };
 
 const showError = (error, req, res, next) => {
+	if (req.file) {
+		fs.unlink(req.file.path, error => console.log(error));
+	}
 	if (res.headerSent) return next(error);
 	res.status(error.code || 500).json({
 		message: error.message || 'An unknown error has occurred...',

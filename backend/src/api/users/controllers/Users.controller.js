@@ -2,8 +2,9 @@ import HttpError from '../../../errors/HttpError.js';
 import User from '../models/User.schema.js';
 import { validationResult } from 'express-validator';
 import { displayError } from '../../../errors/Errors.controller.js';
-const imageUrlPlaceHolder =
-	'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
+
+// const imageUrlPlaceHolder =
+// 	'https://www.pngfind.com/pngs/m/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.png';
 
 const getUserByID = async (req, res, next) => {
 	const uid = req.params.uid;
@@ -26,7 +27,7 @@ const getUserByID = async (req, res, next) => {
 //
 const getAllUsers = async (req, res, next) => {
 	let users;
-//
+	//
 	try {
 		users = await User.find({}, '-password').exec();
 	} catch (error) {
@@ -50,14 +51,12 @@ const authenticateUser = async (req, res, next) => {
 	if (!errors.isEmpty()) throw new HttpError(`Invalid inputs!`, 422);
 
 	const { email, password } = req.body;
-	
+
 	let user;
 
 	try {
 		user = await User.findOne({ email: email, password: password }).exec();
-		
 	} catch (error) {
-		
 		return displayError(
 			'No user was found with those credentials.',
 			401,
@@ -65,9 +64,13 @@ const authenticateUser = async (req, res, next) => {
 		);
 	}
 
-	if (!user){
-		
-		return displayError('No user was found with those credentials.', 404,next);}
+	if (!user) {
+		return displayError(
+			'No user was found with those credentials.',
+			404,
+			next
+		);
+	}
 
 	res.status(201).json({
 		authenticated: true,
@@ -103,7 +106,7 @@ const registerNewUser = async (req, res, next) => {
 		name,
 		email,
 		password,
-		imageUrl: imageUrlPlaceHolder,
+		imageUrl: req.file.path,
 		places: [],
 	});
 

@@ -5,6 +5,7 @@ import './Input.styles.scss';
 const inputReducer = (state, action) => {
 	switch (action.type) {
 		case 'CHANGE':
+			console.log(state)
 			return {
 				...state,
 				value: action.val,
@@ -31,7 +32,8 @@ const Input = ({
 	validators,
     onInput,
 	initialValid,
-	initialValue
+	initialValue,
+	
 }) => {
 	
 	const [inputState, dispatch] = useReducer(inputReducer, {
